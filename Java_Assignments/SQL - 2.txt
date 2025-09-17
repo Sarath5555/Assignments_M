@@ -1,0 +1,182 @@
+-- CREATE DATABASE CompanyDB;
+-- USE CompanyDB;
+
+CREATE TABLE Employees (
+    empId INT PRIMARY KEY,
+    firstName VARCHAR(50),
+    lastName VARCHAR(50),
+    dob DATE,
+    salary DECIMAL(10,2)
+);
+
+INSERT INTO Employees (empId, firstName, lastName, dob, salary) VALUES
+(1, 'Sarth', 'Relangi', '1986-05-15', 57000),
+(2, 'Chandu', 'Relangi', '1989-11-21', 61000),
+(3, 'Naveen', 'Kumar', '1983-08-10', 49500),
+(4, 'Shyam', 'Bhaskar', '1979-02-18', 76000),
+(5, 'Sarath', 'Chandram', '1994-09-25', 59000),
+(6, 'Ajay', 'Kumar', '1987-04-30', 54000),
+(7, 'Manoj', 'Reddy', '1991-12-05', 47500),
+(8, 'Arjun', 'Reddy', '1981-03-12', 81000),
+(9, 'Rohit', 'Kannad', '1986-07-28', 51500),
+(10, 'Gopi', 'Raju', '1992-10-14', 45500);
+
+SELECT * FROM Employees;
+
+SELECT * FROM Employees 
+WHERE salary > 50000;
+
+UPDATE Employees 
+SET salary = 60000 
+WHERE empId = 5;
+
+DELETE FROM Employees 
+WHERE empId = 10;
+
+ALTER TABLE Employees ADD department VARCHAR(50);
+
+ALTER TABLE Employees RENAME COLUMN department TO deptName;
+
+SELECT * FROM Employees ORDER BY lastName ASC;
+
+SELECT DISTINCT deptName FROM Employees;
+
+SELECT AVG(salary) AS averageSalary FROM Employees;
+
+SELECT deptName, COUNT(*) AS employeeCount
+FROM Employees
+GROUP BY deptName;
+
+SELECT * FROM Employees 
+WHERE lastName LIKE 'S%';
+
+SELECT * FROM Employees 
+WHERE dob BETWEEN '1980-01-01' AND '1990-12-31';
+
+SELECT * FROM Employees 
+WHERE salary BETWEEN 40000 AND 60000;
+
+SELECT * FROM Employees
+ORDER BY salary DESC
+LIMIT 5;
+
+SELECT * FROM Employees 
+WHERE firstName LIKE '%an%';
+
+SELECT * FROM Employees 
+WHERE salary IS NOT NULL;
+
+SELECT CONCAT(firstName, ' ', lastName) AS fullName 
+FROM Employees;
+
+CREATE TABLE Departments (
+    deptId INT PRIMARY KEY,
+    deptName VARCHAR(100)
+);
+
+ALTER TABLE Employees 
+ADD deptId INT,
+ADD CONSTRAINT fk_dept FOREIGN KEY (deptId) REFERENCES Departments(deptId);
+
+INSERT INTO Departments (deptId, deptName) VALUES
+(1, 'HR'),
+(2, 'Finance'),
+(3, 'Engineering'),
+(4, 'Marketing');
+
+SELECT e.empId, e.firstName, e.lastName, e.salary, d.deptName
+FROM Employees e
+INNER JOIN Departments d ON e.deptId = d.deptId;
+
+SELECT d.deptName
+FROM Departments d
+LEFT JOIN Employees e ON d.deptId = e.deptId
+WHERE e.empId IS NULL;
+
+SELECT e.empId, e.firstName, e.lastName
+FROM Employees e
+INNER JOIN Departments d ON e.deptId = d.deptId
+WHERE d.deptName = 'Finance';
+
+SELECT e1.empId AS employee_id, e1.firstName AS employee_name,
+       e2.empId AS manager_id, e2.firstName AS manager_name
+FROM Employees e1
+LEFT JOIN Employees e2 ON e1.managerId = e2.empId;
+
+CREATE TABLE Projects (
+    projectId INT PRIMARY KEY,
+    projectName VARCHAR(100),
+    deptId INT,
+    FOREIGN KEY (deptId) REFERENCES Departments(deptId)
+);
+
+CREATE TABLE Employee_Projects (
+    empId INT,
+    projectId INT,
+    PRIMARY KEY (empId, projectId),
+    FOREIGN KEY (empId) REFERENCES Employees(empId),
+    FOREIGN KEY (projectId) REFERENCES Projects(projectId)
+);
+
+SELECT p.projectName, e.firstName, e.lastName
+FROM Projects p
+INNER JOIN Employee_Projects ep ON p.projectId = ep.projectId
+INNER JOIN Employees e ON ep.empId = e.empId;
+
+SELECT d.deptName, SUM(e.salary) AS totalSalary
+FROM Employees e
+INNER JOIN Departments d ON e.deptId = d.deptId
+GROUP BY d.deptName;
+
+SELECT d.deptName
+FROM Employees e
+INNER JOIN Departments d ON e.deptId = d.deptId
+GROUP BY d.deptName
+ORDER BY AVG(e.salary) DESC
+LIMIT 1;
+
+SELECT CASE
+           WHEN YEAR(CURDATE()) - YEAR(e.dob) < 30 THEN '<30'
+           WHEN YEAR(CURDATE()) - YEAR(e.dob) BETWEEN 30 AND 40 THEN '30-40'
+           ELSE '>40'
+       END AS ageBracket,
+       COUNT(*) AS employeeCount
+FROM Employees e
+GROUP BY ageBracket;
+
+SELECT d.deptName, COUNT(*) AS employeeCount
+FROM Employees e
+INNER JOIN Departments d ON e.deptId = d.deptId
+GROUP BY d.deptName
+HAVING COUNT(*) > 3;
+
+SELECT d.deptName, MIN(e.salary) AS minSalary, MAX(e.salary) AS maxSalary
+FROM Employees e
+INNER JOIN Departments d ON e.deptId = d.deptId
+GROUP BY d.deptName;
+
+SELECT d.deptName, COUNT(*) AS employeeCount
+FROM Employees e
+INNER JOIN Departments d ON e.deptId = d.deptId
+GROUP BY d.deptName
+ORDER BY employeeCount DESC;
+
+SELECT MAX(e.salary) AS secondHighestSalary
+FROM Employees e
+WHERE e.salary < (SELECT MAX(salary) FROM Employees);
+
+SELECT d.deptName
+FROM Employees e
+INNER JOIN Departments d ON e.deptId = d.deptId
+GROUP BY d.deptName
+HAVING AVG(e.salary) < 50000;
+
+SELECT d.deptName, COUNT(*) AS employeeCount
+FROM Employees e
+INNER JOIN Departments d ON e.deptId = d.deptId
+GROUP BY d.deptName
+HAVING COUNT(*) > 5;
+
+SELECT COUNT(*) AS employeesWithoutDept
+FROM Employees
+WHERE deptId IS NULL;

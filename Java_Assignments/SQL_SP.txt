@@ -1,0 +1,125 @@
+DELIMITER //
+CREATE PROCEDURE getAllEmployees()
+BEGIN
+    SELECT * 
+    FROM employees;
+END//
+DELIMITER ;
+
+CALL getAllEmployees();
+
+
+DELIMITER //
+CREATE PROCEDURE getEmployeeByDept(IN dept_name VARCHAR(50))
+BEGIN
+    SELECT emp_id, name, department, salary 
+    FROM employees
+    WHERE department = dept_name;
+END//
+DELIMITER ;
+
+CALL getEmployeeByDept('IT');
+
+
+DELIMITER //
+CREATE PROCEDURE addEmployee(
+    IN new_emp_id INT, 
+    IN new_name VARCHAR(50), 
+    IN new_department VARCHAR(50), 
+    IN new_salary DECIMAL(10,2)
+)
+BEGIN
+    INSERT INTO employees (emp_id, name, department, salary) 
+    VALUES (new_emp_id, new_name, new_department, new_salary);
+END//
+DELIMITER ;
+
+CALL addEmployee(6, 'Frank', 'Marketing', 72000.00);
+
+
+DELIMITER //
+CREATE PROCEDURE updateSalary(
+    IN new_emp_id INT, 
+    IN new_salary DECIMAL(10,2)
+)
+BEGIN
+    UPDATE employees
+    SET salary = new_salary
+    WHERE emp_id = new_emp_id;
+END//
+DELIMITER ;
+
+CALL updateSalary(3, 58000.00);
+
+
+DELIMITER //
+CREATE PROCEDURE deleteEmployeeById(IN new_emp_id INT)
+BEGIN
+    DELETE FROM employees
+    WHERE emp_id = new_emp_id;
+END//
+DELIMITER ;
+
+CALL deleteEmployeeById(3);
+
+
+DELIMITER //
+CREATE PROCEDURE getTotalSalaryByDept(IN dept_name VARCHAR(50))
+BEGIN
+    SELECT department, SUM(salary) AS TotalSalary
+    FROM employees
+    WHERE department = dept_name
+    GROUP BY department;
+END//
+DELIMITER ;
+
+CALL getTotalSalaryByDept('Sales');
+
+
+DELIMITER //
+CREATE PROCEDURE getOrdersAboveAmount(IN min_amount DECIMAL(10,2))
+BEGIN
+    SELECT order_id, customer_name, amount, order_date
+    FROM orders
+    WHERE amount > min_amount;
+END//
+DELIMITER ;
+
+CALL getOrdersAboveAmount(1000.00);
+
+
+DELIMITER //
+CREATE PROCEDURE getDepartmentLocation(IN dept_name VARCHAR(50))
+BEGIN
+    SELECT location
+    FROM departments
+    WHERE name = dept_name;
+END//
+DELIMITER ;
+
+CALL getDepartmentLocation('HR');
+
+
+DELIMITER //
+CREATE PROCEDURE getHighestPaidEmployee()
+BEGIN
+    SELECT emp_id, name, department, salary
+    FROM employees
+    ORDER BY salary DESC
+    LIMIT 1;
+END//
+DELIMITER ;
+
+CALL getHighestPaidEmployee();
+
+
+DELIMITER //
+CREATE PROCEDURE countEmployeesByDepartment()
+BEGIN
+    SELECT department, COUNT(*) AS EmployeeCount
+    FROM employees
+    GROUP BY department;
+END//
+DELIMITER ;
+
+CALL countEmployeesByDepartment();

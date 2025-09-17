@@ -1,0 +1,201 @@
+1. Longest Common Prefix
+
+class Solution {
+    public String longestCommonPrefix(String[] strs) {
+        Arrays.sort(strs);
+        String ans = "";
+        int n = strs.length;
+        String s1 = strs[0];
+        String s2 = strs[n - 1];
+        int i = 0;
+        while(i < s1.length() && i < s2.length()){
+            if(s1.charAt(i) == s2.charAt(i)){
+                ans += strs[0].charAt(i);
+                i++;
+            }
+            else return ans;
+        }
+        return ans;
+    }
+}
+
+2. Index of the First Occurrence in a String
+
+class Solution {
+    public int strStr(String haystack, String needle) {
+        int n = haystack.length(), m = needle.length();
+        for(int i = 0; i <= n - m; i++){
+            if(haystack.substring(i, i + m).equals(needle)) return i;
+        }
+        return -1;
+    }
+}
+
+3. First Unique Character in a String
+
+class Solution {
+    public int firstUniqChar(String s){
+        Map<Character, Integer> m = new HashMap<>();
+
+        for(char a : s.toCharArray()) m.put(a, m.getOrDefault(a, 0) + 1);
+        
+        for(int i = 0; i < s.length(); i++){
+            if(m.get(s.charAt(i)) == 1){
+                return i;
+            }
+        }
+
+        return -1;
+    }
+}
+
+4. Sort Array by Increasing Frequency
+
+class Solution {
+    public int[] frequencySort(int[] nums) {
+        Map<Integer, Integer> map = new HashMap<>();
+        List<Integer> ans = new ArrayList<>();
+        for(int n : nums){                            
+            ans.add(n);
+            map.put(n, map.getOrDefault(n, 0) + 1);
+        }
+
+        Collections.sort(ans, (a, b) ->                 
+            (map.get(a) == map.get(b))? b - a : map.get(a) - map.get(b)
+        );
+
+        return ans.stream().mapToInt(i -> i).toArray();
+    }
+}
+
+5. Relative Sort Array
+
+class Solution {
+    public int[] relativeSortArray(int[] arr1, int[] arr2) {
+        Map<Integer, Integer> order = new HashMap<>();
+        for (int i = 0; i < arr2.length; i++) {
+            order.put(arr2[i], i);
+        }
+
+        List<Integer> list = new ArrayList<>();
+        for (int num : arr1){
+            list.add(num);
+        }
+
+        Collections.sort(list, (a, b) -> {
+            boolean aIn = order.containsKey(a);
+            boolean bIn = order.containsKey(b);
+
+            if(aIn && bIn){
+                return order.get(a) - order.get(b);
+            }else if(aIn){
+                return -1; 
+            }else if(bIn){
+                return 1; 
+            }else{
+                return a - b; 
+            }
+        });
+
+        int[] result = new int[arr1.length];
+        for(int i = 0; i < list.size(); i++){
+            result[i] = list.get(i);
+        }
+        return result;
+    }
+}
+
+6. Sort Array By Parity II
+
+class Solution {
+    public int[] sortArrayByParityII(int[] nums) {
+        List<Integer> evens = new ArrayList<>();
+        List<Integer> odds = new ArrayList<>();
+        
+        for(int num : nums){
+            if (num % 2 == 0) evens.add(num);
+            else odds.add(num);
+        }
+
+        int[] result = new int[nums.length];
+        int e = 0, o = 0;
+        for(int i = 0; i < nums.length; i++){
+            if(i % 2 == 0){
+                result[i] = evens.get(e++);
+            }else{
+                result[i] = odds.get(o++);
+            }
+        }
+        return result;
+    }
+}
+
+7. Integer to Roman
+
+class Solution {
+    public String intToRoman(int num) {
+        int[] values = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+        String[] symbols = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+
+        StringBuilder roman = new StringBuilder();
+        for(int i = 0; i < values.length; i++){
+            while(num >= values[i]){
+                roman.append(symbols[i]);
+                num -= values[i];
+            }
+        }
+        return roman.toString();
+    }
+}
+
+8. Roman to Integer
+
+class Solution {
+    private static final Map<Character, Integer> map = Map.of(
+        'I', 1, 'V', 5, 'X', 10, 'L', 50,
+        'C', 100, 'D', 500, 'M', 1000
+    );
+
+    public int romanToInt(String s) {
+        int n = s.length();
+        int ans = 0;
+
+        for(int i = 0; i < n; i++){
+            if(i < n - 1 && map.get(s.charAt(i)) < map.get(s.charAt(i + 1))){
+                ans -= map.get(s.charAt(i));
+            }else{
+                ans += map.get(s.charAt(i));
+            }
+        }
+        return ans;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
